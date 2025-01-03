@@ -14,7 +14,7 @@ let lastDirection = 'motor_stop';
 
 onMounted(() => {
     const manager = nipplejs.create({
-        zone: joystick.value,
+        zone: joystick.value!,
         mode: 'static',
         position: { left: '50%', top: '50%' },
         lockY: true,

@@ -5,15 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "cd ./web && vite --host",
-    "build": "cd ./web && run-p type-check \"build-only {@}\" --",
+    "build": "run-p \"build-only {@}\" --",
     "preview": "cd ./web && vite preview",
-    "build-only": "cd ./web && vite build",
+    "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@types/web-bluetooth": "^0.0.20",
     "nipplejs": "^0.10.2",
     "pinia": "^2.3.0",
     "vue": "^3.5.13",
@@ -21,6 +20,7 @@
     "vuetify": "^3.7.6"
   },
   "devDependencies": {
+    "@types/web-bluetooth": "^0.0.20",
     "@mdi/font": "^7.4.47",
     "@tsconfig/node22": "^22.0.0",
     "@types/node": "^22.10.2",

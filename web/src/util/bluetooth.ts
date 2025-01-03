@@ -1,6 +1,7 @@
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
+
 export class Bluetooth {
     device: BluetoothDevice;
     server: BluetoothRemoteGATTServer;
@@ -22,8 +23,8 @@ export class Bluetooth {
         this.send = await this.service.getCharacteristic(0x2A6E);
         this.get = await this.service.getCharacteristic(0x2A6F);
 
-        this.get.addEventListener('characteristicvaluechanged', (event) => {
-            console.log(decoder.decode(event.target.value));
+        this.get.addEventListener('characteristicvaluechanged', (event: any) => {
+            console.log(decoder.decode(event.target!.value));
         });
         device.addEventListener('gattserverdisconnected', () => {
             if (!this.server.connected) {
