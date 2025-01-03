@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "cd ./web && vite --host",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "build-only": "vite build",
+    "build": "cd ./web && run-p type-check \"build-only {@}\" --",
+    "preview": "cd ./web && vite preview",
+    "build-only": "cd ./web && vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
