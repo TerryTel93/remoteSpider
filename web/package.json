@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "cd ./web && vite --host",
+    "dev": "vite --host",
     "build": "run-p \"build-only {@}\" --",
-    "preview": "cd ./web && vite preview",
+    "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",

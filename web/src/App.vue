@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import btConnection from './views/btConnection.vue';
 
-const snackbar = true;
+// const snackbar = true;
 
 </script>
 <template>

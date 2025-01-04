@@ -1,22 +1,22 @@
 
+/// <reference types="web-bluetooth" />
 import { defineStore } from "pinia"
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-
 export const useSpiderStore = defineStore('Spider', {
     state: () => ({
         led: false,
-        motor_forward: false,
-        motor_backward: false,
+        motor_forward: 0,
+        motor_backward: 0,
         _device: null as BluetoothDevice | null,
         _server: null as BluetoothRemoteGATTServer | null,
         _service: null as BluetoothRemoteGATTService | null,
         send: null as BluetoothRemoteGATTCharacteristic | null,
         get: null as BluetoothRemoteGATTCharacteristic | null,
         _sending: false,
-        _queue: [] as [],
+        _queue: [] as { type: string, data: string | boolean | number }[],
     }),
     getters: {
         connected: (state) => {
@@ -34,7 +34,7 @@ export const useSpiderStore = defineStore('Spider', {
             }
             try {
                 this._device = await navigator.bluetooth.requestDevice({ filters: [{ services: [0x1848] }] })
-                this._server = await this._device.gatt.connect();
+                this._server = await this._device.gatt!.connect();
                 this._service = await this._server.getPrimaryService(0x1848);
                 this.send = await this._service.getCharacteristic(0x2A6E);
                 this.get = await this._service.getCharacteristic(0x2A6F);
@@ -42,10 +42,12 @@ export const useSpiderStore = defineStore('Spider', {
                 this._device.addEventListener('gattserverdisconnected', () => {
                     this.disconnect();
                 });
-            } catch (error) {
-                if (error.name === 'NotFoundError') {
-                    return;
-                }
+
+                await this.getData();
+            } catch (error: unknown) {
+                // if (error.name === 'NotFoundError') {
+                //     return;
+                // }
 
                 console.error('Failed to connect to device:', error);
             }
@@ -65,27 +67,31 @@ export const useSpiderStore = defineStore('Spider', {
             }
         },
 
-        async sendData(data: string) {
+        async sendData(type: string, data: string | boolean | number, force = false) {
             if (this._sending) {
-                console.log('Queueing data:', data);
-                this._queue.push(data);
+                if (force) {
+                    console.log('Queueing data:', data);
+                    this._queue.push({ type: type, data: data });
+                }
                 return;
             }
             this._sending = true;
             try {
-                await this.send.writeValue(encoder.encode(data));
+                console.log('Sending data:', `${type}:${data}`);
+                await this.send!.writeValue(encoder.encode(`${type}:${data}`));
                 await this.getData();
             } finally {
                 this._sending = false;
-                if (this._queue.length > 0) {
-                    await this.sendData(this._queue.shift());
+                const queue = this._queue.shift();
+                if (queue) {
+                    await this.sendData(queue.type, queue.data);
                 }
             }
         },
 
         async getData() {
             try {
-                const data = await this.get.readValue()
+                const data = await this.get!.readValue()
                 const json = JSON.parse(decoder.decode(data));
                 console.log(json);
                 if (json.led !== undefined) {

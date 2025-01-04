@@ -27,28 +27,25 @@ onMounted(() => {
         // Use the angle to determine direction
         if (angle > 45 && angle <= 135) {
             if (lastDirection != 'motor_forward') {
-                lastDirection = 'motor_forward'
-                await bluetooth.sendData('motor_forward');
+                await bluetooth.sendData('motor_forward', Math.round(data.distance * 2));
             }
         } else if (angle > 225 && angle <= 315) {
             if (lastDirection != 'motor_backward') {
-                lastDirection = 'motor_backward'
-                await bluetooth.sendData('motor_backward');
+                await bluetooth.sendData('motor_backward', Math.round(data.distance * 2));
             }
-
         }
     });
     manager.on('end', async () => {
         lastDirection = 'motor_stop';
-        await bluetooth.sendData('motor_stop');
+        await bluetooth.sendData('motor_stop', 'true', true);
     });
 });
 
 async function ledToggle() {
     if (bluetooth.led) {
-        return bluetooth.sendData('led_off');
+        return bluetooth.sendData('led', 'false');
     }
-    return bluetooth.sendData('led_on');
+    return bluetooth.sendData('led', 'true');
 }
 
 // async function ledOff() {
