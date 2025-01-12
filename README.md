@@ -2,7 +2,7 @@
 
 ## Introduction
 
-RemoteSpider is a project designed to run on a Raspberry Pi Pico and the web. This guide will help you install and set up the main file on your Pico.
+RemoteSpider is a project designed to run on a Raspberry Pi Pico and the web. This project was build to convert a basic motor circuit into a remove control via bluetooth. This guide will help you install and set up the main file on your Raspberry Pi Pico.
 
 ## Requirements
 
