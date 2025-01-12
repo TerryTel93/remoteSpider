@@ -62,7 +62,7 @@ async function ledToggle() {
 </template>
 
 <style lang="css" scoped>
-.wrapper {
+.center {
     padding: 30px;
     display: flex;
     justify-content: space-between;
