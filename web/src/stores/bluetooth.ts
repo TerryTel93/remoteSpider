@@ -28,7 +28,9 @@ export const useSpiderStore = defineStore('Spider', {
     },
     actions: {
         async connect() {
+            //TODO: add a loading spinner while connecting
             if (!navigator.bluetooth) {
+                //TODO: show a message to the user that their browser does not support web bluetooth
                 console.error('Web Bluetooth is not supported in this browser');
                 return;
             }
@@ -45,10 +47,14 @@ export const useSpiderStore = defineStore('Spider', {
 
                 await this.getData();
             } catch (error: unknown) {
-                // if (error.name === 'NotFoundError') {
-                //     return;
-                // }
+                if (error instanceof Error) {
+                    if (error.name == 'NetworkError') {
+                        //TODO: We need to tell the user that the network has been disconnected
+                        return
+                    }
+                }
 
+                //TODO: show a generic error message to the user
                 console.error('Failed to connect to device:', error);
             }
 
@@ -70,16 +76,18 @@ export const useSpiderStore = defineStore('Spider', {
         async sendData(type: string, data: string | boolean | number, force = false) {
             if (this._sending) {
                 if (force) {
-                    console.log('Queueing data:', data);
-                    this._queue.push({ type: type, data: data });
+                    this._queue.push({ type, data });
                 }
+
+                // if we are already sending data thats not important then we will ignore the current command
                 return;
             }
             this._sending = true;
             try {
-                console.log('Sending data:', `${type}:${data}`);
                 await this.send!.writeValue(encoder.encode(`${type}:${data}`));
                 await this.getData();
+            } catch (err: unknown) {
+                console.error('Failed to send data:', err);
             } finally {
                 this._sending = false;
                 const queue = this._queue.shift();
@@ -90,10 +98,14 @@ export const useSpiderStore = defineStore('Spider', {
         },
 
         async getData() {
+            if (!this.get) {
+                return;
+            }
+
             try {
-                const data = await this.get!.readValue()
+                const data = await this.get!.readValue();
                 const json = JSON.parse(decoder.decode(data));
-                console.log(json);
+
                 if (json.led !== undefined) {
                     this.led = json.led;
                 }
@@ -104,6 +116,7 @@ export const useSpiderStore = defineStore('Spider', {
                     this.motor_backward = json.motor_backward;
                 }
             } catch (err) {
+                //TODO: show a message to the user something went wrong
                 console.error(err);
             }
 
